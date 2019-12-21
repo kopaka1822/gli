@@ -256,10 +256,11 @@ namespace gli
 
 		// extensions from libpng
 		FORMAT_RA8_SRGB_PACK8,
+		FORMAT_RA8_UNORM_PACK8,
 		FORMAT_AR8_SRGB_PACK8,
 		FORMAT_ARGB8_SRGB_PACK8,
 		FORMAT_ABGR8_SRGB_PACK8,
-		FORMAT_RA16_UNORM_PACK16
+		FORMAT_RA16_UNORM_PACK16,
 	};
 
 	/// Represent the source of a channel
