@@ -8,12 +8,16 @@ namespace detail
 	{
 		GLM_FUNC_QUALIFIER static vec<L, T, Q> call(vec<L, T, Q> const& ColorRGB, T GammaCorrection)
 		{
-			vec<L, T, Q> const ClampedColor(clamp(ColorRGB, static_cast<T>(0), static_cast<T>(1)));
+			vec<L, T, Q> res;
+			for(length_t i = 0; i < L; ++i)
+			{
+				if (ColorRGB[i] <= static_cast<T>(0.0)) res[i] = static_cast<T>(0.0);
+				else if (ColorRGB[i] >= static_cast<T>(1.0)) res[i] = static_cast<T>(1.0);
+				else if (ColorRGB[i] <= static_cast<T>(0.0031308)) res[i] = ColorRGB[i] * static_cast<T>(12.92);
+				else res[i] = pow(ColorRGB[i], GammaCorrection) * static_cast<T>(1.055) - static_cast<T>(0.055);
+			}
 
-			return mix(
-				pow(ClampedColor, vec<L, T, Q>(GammaCorrection)) * static_cast<T>(1.055) - static_cast<T>(0.055),
-				ClampedColor * static_cast<T>(12.92),
-				lessThan(ClampedColor, vec<L, T, Q>(static_cast<T>(0.0031308))));
+			return res;
 		}
 	};
 
@@ -31,10 +35,15 @@ namespace detail
 	{
 		GLM_FUNC_QUALIFIER static vec<L, T, Q> call(vec<L, T, Q> const& ColorSRGB, T Gamma)
 		{
-			return mix(
-				pow((ColorSRGB + static_cast<T>(0.055)) * static_cast<T>(0.94786729857819905213270142180095), vec<L, T, Q>(Gamma)),
-				ColorSRGB * static_cast<T>(0.07739938080495356037151702786378),
-				lessThanEqual(ColorSRGB, vec<L, T, Q>(static_cast<T>(0.04045))));
+			vec<L, T, Q> res;
+			for(length_t i = 0; i < L; ++i)
+			{
+				if (ColorSRGB[i] <= static_cast<T>(0.0)) res[i] = static_cast<T>(0.0);
+				else if (ColorSRGB[i] >= static_cast<T>(1.0)) res[i] = static_cast<T>(1.0);
+				else if (ColorSRGB[i] < static_cast<T>(0.04045)) res[i] = ColorSRGB[i] * static_cast<T>(0.07739938080495356037151702786378);
+				else res[i] = pow((ColorSRGB[i] + static_cast<T>(0.055)) * static_cast<T>(0.94786729857819905213270142180095), Gamma);
+			}
+			return res;
 		}
 	};
 
